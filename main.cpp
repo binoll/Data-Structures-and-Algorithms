@@ -1,7 +1,7 @@
 #include "set.h"
 
 int main() {
-    Set<int> set1, set2;
+    Set<int> set;
 
     return 0;
 }
