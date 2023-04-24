@@ -1,17 +1,16 @@
 // Copyright 2023 binoll
 #pragma once
-#include "libs.h"
+#include "../libs.h"
 
 template<typename type>
 class Node {
 public:
     Node() = default;  // constructor without parameters
 
-    explicit Node(type& value) : value(value) {};  // constructor with parameters
+    explicit Node(const type& value) : value(value) {};  // constructor with parameters
 
     ~Node() = default;  // destructor
 
-private:
     type value = 0;  // value
     Node<type>* left = nullptr;  // pointer to the left node
     Node<type>* right = nullptr;  // pointer to the right node
@@ -20,19 +19,19 @@ private:
 template<typename type>
 class BinaryTree {
 public:
-    BinaryTree();  // constructor without parameters
+    BinaryTree() = default;  // constructor without parameters
 
-    explicit BinaryTree(type& value);  // constructor with parameters
+    explicit BinaryTree(const type& value);  // constructor with parameters
 
     ~BinaryTree();  // destructor
 
-    bool find(type& value);  // searching for an element in a binary search tree
+    bool find(const type& value);  // searching for an element in a binary search tree
 
-    Node<type>* findIndex(type& value);  // searching for an element in a binary search tree
+    Node<type>* findIndex(const type& value);  // searching for an element in a binary search tree
 
-    bool add(type& value);  // add element
+    bool add(const type& value);  // add element
 
-    bool remove(type& value);  // delete element
+    bool remove(const type& value);  // delete element
 
     void traversalNRL();  // tree traversal NRL
 
@@ -53,21 +52,7 @@ private:
 };
 
 template<typename type>
-BinaryTree<type>::BinaryTree() {
-    try {
-        if (size <= max_size) {
-            root = new Node<type>();
-            ++size;
-        } else {
-            throw std::exception();
-        }
-    } catch (...) {
-        std::cout << "\nConstruct threw except\n";
-    }
-}
-
-template<typename type>
-BinaryTree<type>::BinaryTree(type& value) {
+BinaryTree<type>::BinaryTree(const type& value) {
     try {
         if (size <= max_size) {
             root = new Node<type>(value);
@@ -86,7 +71,7 @@ BinaryTree<type>::~BinaryTree() {
 }
 
 template<typename type>
-bool BinaryTree<type>::find(type& value) {
+bool BinaryTree<type>::find(const type& value) {
     Node<type>* ptr = root;
 
     while (true) {
@@ -109,7 +94,7 @@ bool BinaryTree<type>::find(type& value) {
 }
 
 template<typename type>
-Node<type>* BinaryTree<type>::findIndex(type& value) {
+Node<type>* BinaryTree<type>::findIndex(const type& value) {
     Node<type>* ptr = root;
 
     while (true) {
@@ -132,41 +117,76 @@ Node<type>* BinaryTree<type>::findIndex(type& value) {
 }
 
 template<typename type>
-bool BinaryTree<type>::add(type& value) {
-    Node<type>* ptr = root;
+bool BinaryTree<type>::add(const type& value) {
+    Node<type> *ptr = root;
 
-    if (!find(value)) {
-        while (true) {
-            if (ptr->value > value) {
-                if (ptr->left == nullptr) {
-                    try {
-                        if (size <= max_size) {
-                            ptr->left = new Node<type>(value);
-                            ++size;
-                        } else {
-                            throw std::exception();
-                        }
-                    } catch (...) {
-                        std::cout << "\nAdd method threw except\n";
-                    }
+    while (true) {
+        if (root == nullptr) {
+            try {
+                if (size <= max_size) {
+                    root = new Node<type>(value);
+                    ++size;
+                    return true;
                 } else {
-                    ptr = ptr->left;
+                    throw std::exception();
+                }
+            } catch (...) {
+                std::cout << "\nAdd method threw except\n";
+            }
+        } else if (ptr->value > value) {
+            if (ptr->left == nullptr) {
+                try {
+                    if (size <= max_size) {
+                        ptr->left = new Node<type>(value);
+                        ++size;
+                        return true;
+                    } else {
+                        throw std::exception();
+                    }
+                } catch (...) {
+                    std::cout << "\nAdd method threw except\n";
                 }
             } else {
-                if (ptr->right == nullptr) {
-                    try {
-                        if (size <= max_size) {
-                            ptr->right = new Node<type>(value);
-                            ++size;
-                        } else {
-                            throw std::exception();
-                        }
-                    } catch (...) {
-                        std::cout << "\nAdd method threw except\n";
+                ptr = ptr->left;
+            }
+        } else {
+            if (ptr->right == nullptr) {
+                try {
+                    if (size <= max_size) {
+                        ptr->right = new Node<type>(value);
+                        ++size;
+                        return true;
+                    } else {
+                        throw std::exception();
                     }
-                } else {
-                    ptr = ptr->right;
+                } catch (...) {
+                    std::cout << "\nAdd method threw except\n";
                 }
+            } else {
+                ptr = ptr->right;
+            }
+        }
+    }
+}
+
+template<typename type>
+bool BinaryTree<type>::remove(const type& value) {
+    Node<type> *ptr = findIndex(value);
+
+    if (ptr != nullptr) {
+        while (true) {
+            if ((ptr->left == nullptr) && (ptr->right == nullptr)) {
+                try {
+                    delete ptr;
+                    --size;
+                    return true;
+                } catch (...) {
+                    std::cout << "\nRemove method threw except\n";
+                }
+            } else if ((ptr->left != nullptr) && (ptr->right != nullptr)) {
+
+            } else if ((ptr->left != nullptr) || (ptr->right != nullptr)) {
+
             }
         }
     } else {
