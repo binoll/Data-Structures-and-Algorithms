@@ -1,6 +1,6 @@
 // Copyright 2023 binoll
 #pragma once
-#include <bits/stdc++.h>
+#include "libs.h"
 
 template<typename type>
 class Set {
@@ -8,8 +8,6 @@ public:
     Set() = default;  // constructor without parameters
 
     explicit Set(const type& value);  // constructor with parameters
-
-    explicit Set(const int64_t& size);  // constructor with parameters
 
     Set(const Set& set);  // copy constructor
 
@@ -42,9 +40,9 @@ public:
     Set operator^(const Set& set);  // operator overload for the symmetric difference of two sets
 
     template<typename new_type>
-    friend std::ostream& operator<<(std::ostream& stream,
-                                    const Set<new_type>& set);  // overloading an operator
-                                                                // to insert into a stream
+    friend std::ostream& operator<<(std::ostream& stream,       // overloading an operator
+                                    const Set<new_type>& set);  // to insert into a stream
+
 private:
     int64_t size = 0;  // current capacity of the set
     int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum int64_t value
@@ -53,26 +51,11 @@ private:
 
 template<typename type>
 Set<type>::Set(const type& value) {
-    int64_t index = size;
-
     try {
-        ptr = new type[size];
+        ptr = new type[size + 1];
 
-        ptr[index] = value;
+        ptr[size] = value;
         ++size;
-    } catch (...) {
-        std::cout << "\nProblems with constructor\n";
-    }
-}
-
-template<typename type>
-Set<type>::Set(const int64_t& size) {
-    try {
-        ptr = new type[size];
-
-        for (int64_t i = 0; i < size; ++i) {
-            ptr[i] = 0;
-        }
     } catch (...) {
         std::cout << "\nProblems with constructor\n";
     }
@@ -371,7 +354,7 @@ Set<type> Set<type>::operator^(const Set& set) {
 }
 
 template<typename type>
-std::ostream& operator<<(std::ostream &stream, const Set<type> &set) {
+std::ostream& operator<<(std::ostream& stream, const Set<type>& set) {
     int64_t count = 0;
 
     stream << "{ ";
