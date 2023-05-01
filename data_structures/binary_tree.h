@@ -142,7 +142,7 @@ void BinaryTree<type>::add(const type& value) {
         while (true) {
             if (ptr->value > value) {
                 if (ptr->left == nullptr) {
-                    root = new Node<type>(value);
+                    ptr->left = new Node<type>(value);
                     ++size;
                     return;
                 } else {
@@ -150,7 +150,7 @@ void BinaryTree<type>::add(const type& value) {
                 }
             } else {
                 if (ptr->right == nullptr) {
-                     root = new Node<type>(value);
+                    ptr->right = new Node<type>(value);
                     ++size;
                     return;
                 } else {
@@ -173,6 +173,8 @@ void BinaryTree<type>::remove(const type& value) {
         return;
     }
     while (ptr->value != value) {  // search delete element
+        parent_ptr = ptr;
+
         if (ptr == nullptr) {
             return;
         }
@@ -183,7 +185,6 @@ void BinaryTree<type>::remove(const type& value) {
             is_left = false;
             ptr = ptr->right;
         }
-        parent_ptr = ptr;       
     }
     try {
         if ((ptr->left == nullptr) && (ptr->right == nullptr)) {  // delete if no child
@@ -191,16 +192,16 @@ void BinaryTree<type>::remove(const type& value) {
                 delete root;
                 root = nullptr;
             } else if (is_left) {
-                delete ptr->left;
-                ptr->left = nullptr;
+                delete ptr;
+                parent_ptr->left = nullptr;
             } else {
-                delete ptr->right;
-                ptr->right = nullptr;
+                delete ptr;
+                parent_ptr->right = nullptr;
             }
         } else if (ptr->right == nullptr) {  // delete if only left child
-            Node<type>* temp = root;
-
             if (ptr == root) {
+                Node<type>* temp = root;
+
                 root = ptr->left;
                 delete temp;
             } else if (is_left) {
@@ -211,9 +212,9 @@ void BinaryTree<type>::remove(const type& value) {
                 delete ptr;
             }
         } else if (ptr->left == nullptr) {  // delete if only right child
-            Node<type>* temp = root;
-
             if (ptr == root) {
+                Node<type>* temp = root;
+
                 root = ptr->right;
                 delete temp;
             } else if (is_left) {
@@ -230,15 +231,14 @@ void BinaryTree<type>::remove(const type& value) {
             type new_value = NULL;
 
             while (child_successor != nullptr) {
-                parent_ptr = successor;
+                parent_successor = successor;
                 successor = child_successor;
                 child_successor = child_successor->left;
             }
             if (successor != ptr->right) {
-                    Node<type>* temp = successor;
-                    parent_successor->left = successor->right;
-                    new_value = successor->value;
-                    delete successor;
+                parent_successor->left = successor->right;
+                new_value = successor->value;
+                delete successor;
             }
 
             if (ptr == root) {

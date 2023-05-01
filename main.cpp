@@ -20,7 +20,5 @@ int main() {
 
     tree.remove(7);
 
-    tree.remove(9);
-
     return 0;
 }
