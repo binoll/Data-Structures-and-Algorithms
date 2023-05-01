@@ -46,8 +46,6 @@ public:
     int64_t getSize() const;  // returns the current number of objects
 
 private:
-    Node<type>* findParentIndex(const type& value); // searching for an parent element in a binary search tree
-
     Node<type>* root = nullptr;  // pointer to the root of the tree
     int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum int64_t value
     int64_t size = 0;  // current capacity of the tree
@@ -90,31 +88,6 @@ bool BinaryTree<type>::find(const type& value) {
                 return true;
             } else if (ptr->right == nullptr) {
                 return false;
-            } else {
-                ptr = ptr->right;
-            }
-        }
-    }
-}
-
-template<typename type>
-Node<type>* BinaryTree<type>::findIndex(const type& value) {
-    Node<type>* ptr = root;
-
-    while (true) {
-        if (ptr == nullptr) {
-            return nullptr;
-        } if (ptr->value > value) {
-            if (ptr->left == nullptr) {
-                return nullptr;
-            } else {
-                ptr = ptr->left;
-            }
-        } else {
-            if (ptr->value == value) {
-                return ptr;
-            } else if (ptr->right == nullptr) {
-                return nullptr;
             } else {
                 ptr = ptr->right;
             }
