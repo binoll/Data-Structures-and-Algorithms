@@ -48,8 +48,6 @@ public:
     int64_t getSize() const;  // returns the current number of objects
 
 private:
-    
-
     Node<type>* root = nullptr;  // pointer to the root of the tree
     int64_t min_size = std::numeric_limits<int64_t>::min();     
     int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum int64_t value
@@ -167,4 +165,91 @@ void BinaryTree<type>::add(const type& value) {
 
 template<typename type>
 void BinaryTree<type>::remove(const type& value) {
+    Node<type>* ptr = root;
+    Node<type>* parent_ptr = root;
+    bool is_left = true;
+
+    if (!find(value)) {
+        return;
+    }
+    while (ptr->value != value) {  // search delete element
+        if (ptr == nullptr) {
+            return;
+        }
+        else if (ptr->value > value) {
+            is_left = true;
+            ptr = ptr->left;
+        } else {
+            is_left = false;
+            ptr = ptr->right;
+        }
+        parent_ptr = ptr;       
+    }
+    try {
+        if ((ptr->left == nullptr) && (ptr->right == nullptr)) {  // delete if no child
+            if (ptr == root) {
+                delete root;
+                root = nullptr;
+            } else if (is_left) {
+                delete ptr->left;
+                ptr->left = nullptr;
+            } else {
+                delete ptr->right;
+                ptr->right = nullptr;
+            }
+        } else if (ptr->right == nullptr) {  // delete if only left child
+            Node<type>* temp = root;
+
+            if (ptr == root) {
+                root = ptr->left;
+                delete temp;
+            } else if (is_left) {
+                parent_ptr->left = ptr->left;    
+                delete ptr;
+            } else {
+                parent_ptr->right = ptr->left;
+                delete ptr;
+            }
+        } else if (ptr->left == nullptr) {  // delete if only right child
+            Node<type>* temp = root;
+
+            if (ptr == root) {
+                root = ptr->right;
+                delete temp;
+            } else if (is_left) {
+                parent_ptr->left = ptr->right;    
+                delete ptr;
+            } else {
+                parent_ptr->right = ptr->right;
+                delete ptr;
+            }
+        } else {  // delete if two child
+            Node<type>* successor = ptr;
+            Node<type>* parent_successor = ptr;
+            Node<type>* child_successor = ptr->right;
+            type new_value = NULL;
+
+            while (child_successor != nullptr) {
+                parent_ptr = successor;
+                successor = child_successor;
+                child_successor = child_successor->left;
+            }
+            if (successor != ptr->right) {
+                    Node<type>* temp = successor;
+                    parent_successor->left = successor->right;
+                    new_value = successor->value;
+                    delete successor;
+            }
+
+            if (ptr == root) {
+                root->value = new_value;
+            } else if (is_left) {
+                parent_ptr->left->value = new_value;
+            } else {
+                parent_ptr->right->value = new_value;
+            }
+        }
+    } catch (...) {
+        std::cout << "\nRemove method threw except\n";
+    }
 }
