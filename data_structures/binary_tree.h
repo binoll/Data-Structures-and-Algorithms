@@ -94,17 +94,14 @@ type BinaryTree<type>::findMin() {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
 
-    if (ptr != nullptr) {
+    if (ptr == nullptr) {
         return NULL;
     } 
     while (ptr != nullptr) {
-        if (ptr == nullptr) {
-            return parent_ptr->value;
-        } else {
-            parent_ptr = ptr;
-            ptr = ptr->left;
-        } 
+        parent_ptr = ptr;
+        ptr = ptr->left;
     }
+    return  parent_ptr->value;
 }
 
 template<typename type>
@@ -112,17 +109,14 @@ type BinaryTree<type>::findMax() {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
 
-    if (ptr != nullptr) {
+    if (ptr == nullptr) {
         return NULL;
     }
     while (ptr != nullptr) {
-        if (ptr == nullptr) {
-            return parent_ptr->value;
-        } else {
-            parent_ptr = ptr;
-            ptr = ptr->right;
-        } 
+        parent_ptr = ptr;
+        ptr = ptr->right;
     }
+    return parent_ptr->value;
 }
 
 template<typename type>
