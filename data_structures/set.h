@@ -4,7 +4,7 @@
 
 template<typename type>
 class Set {
-public:
+ public:
     Set() = default;  // constructor without parameters
 
     explicit Set(const type& value);  // constructor with parameters
@@ -19,17 +19,21 @@ public:
 
     int64_t findIndex(const type& value) const;  // item search, return index
                                                  // (if element is not in set then -1)
+
     bool add(const type& value);  // adding an element to a set
 
     bool remove(const type& value);  // removing an element from a set
 
     void clear();  // clear set
 
-    int64_t getSize() const;  // the method returns the current size of the set
+    int64_t getSize() const;  // the method returns
+                              // the current size of the set
 
-    Set& operator=(const Set& set);  // overloading the operator for assignment
+    Set& operator=(const Set& set);  // overloading
+                                     // the operator for assignment
 
-    Set& operator=(Set&& set) noexcept;  // operator overloading for assignment with carry
+    Set& operator=(Set&& set) noexcept;  // operator
+                                         // overloading for assignment with carry
 
     Set operator*(const Set& set);  // operator overload for the intersection of two sets
 
@@ -43,9 +47,9 @@ public:
     friend std::ostream& operator<<(std::ostream& stream,       // overloading an operator
                                     const Set<new_type>& set);  // to insert into a stream
 
-private:
+ private:
     int64_t size = 0;  // current capacity of the set
-    int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum int64_t value
+    int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum value
     type* ptr = nullptr;  // indicates the array in which the elements of the set are stored
 };
 

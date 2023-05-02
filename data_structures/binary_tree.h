@@ -4,10 +4,11 @@
 
 template<typename type>
 class Node {
-public:
+ public:
     Node() = default;  // constructor without parameters
 
-    explicit Node(const type& value) : value(value) {};  // constructor with parameters
+    explicit Node(const type& value) : value(value) {}  // constructor
+                                                        // with parameters
 
     ~Node() = default;  // destructor
 
@@ -18,16 +19,17 @@ public:
 
 template<typename type>
 class BinaryTree {
-public:
+ public:
     BinaryTree() = default;  // constructor without parameters
 
     explicit BinaryTree(const type& value);  // constructor with parameters
 
     ~BinaryTree();  // destructor
 
-    bool find(const type& value);  // searching for an element in a binary search tree
+    bool find(const type& value);  // searching for an
+                                   // element in a binary search tree
 
-    type findMin();  // searching min element 
+    type findMin();  // searching min element
 
     type findMax();  // searching max element
 
@@ -47,10 +49,10 @@ public:
 
     int64_t getSize() const;  // returns the current number of objects
 
-private:
+ private:
     Node<type>* root = nullptr;  // pointer to the root of the tree
-    int64_t min_size = std::numeric_limits<int64_t>::min();  // min int64_t value
-    int64_t max_size = std::numeric_limits<int64_t>::max();  // max int64_t value
+    int64_t min_size = std::numeric_limits<int64_t>::min();  // min value
+    int64_t max_size = std::numeric_limits<int64_t>::max();  // max value
     int64_t size = 0;  // current capacity of the tree
 };
 
@@ -169,7 +171,8 @@ void BinaryTree<type>::remove(const type& value) {
         return;
     }
 
-    while ((ptr != nullptr) && (ptr->value != value)) {  // search delete element
+    while ((ptr != nullptr) &&
+           (ptr->value != value)) {  // search delete element
         parent_ptr = ptr;
 
         if (ptr->value > value) {
@@ -186,7 +189,8 @@ void BinaryTree<type>::remove(const type& value) {
     }
 
     try {
-        if ((ptr->left == nullptr) && (ptr->right == nullptr)) {  // delete if no child
+        if ((ptr->left == nullptr) &&
+            (ptr->right == nullptr)) {  // delete if no child
             if (ptr == root) {
                 delete root;
                 root = nullptr;
