@@ -79,16 +79,16 @@ template<typename type>
 bool BinaryTree<type>::find(const type& value) {
     Node<type>* ptr = root;
 
-    while (ptr->value != value) {
-        if (ptr == nullptr) {
-            return false;
+    while (ptr != nullptr) {
+        if (ptr->value == value) {
+            return true;
         } else if (ptr->value > value) {
             ptr = ptr->left;
         } else {
             ptr = ptr->right;
         }
     }
-    return true;
+    return false;
 }
 
 template<typename type>
@@ -98,12 +98,12 @@ type BinaryTree<type>::findMin() {
 
     if (ptr == nullptr) {
         return NULL;
-    } 
+    }
     while (ptr != nullptr) {
         parent_ptr = ptr;
         ptr = ptr->left;
     }
-    return  parent_ptr->value;
+    return parent_ptr->value;
 }
 
 template<typename type>
@@ -168,13 +168,11 @@ void BinaryTree<type>::remove(const type& value) {
     if (!find(value)) {
         return;
     }
-    while (ptr->value != value) {  // search delete element
+
+    while ((ptr != nullptr) && (ptr->value != value)) {  // search delete element
         parent_ptr = ptr;
 
-        if (ptr == nullptr) {
-            return;
-        }
-        else if (ptr->value > value) {
+        if (ptr->value > value) {
             is_left = true;
             ptr = ptr->left;
         } else {
@@ -182,16 +180,21 @@ void BinaryTree<type>::remove(const type& value) {
             ptr = ptr->right;
         }
     }
+
+    if (ptr == nullptr) {  // if did not search delete element
+        return;
+    }
+
     try {
         if ((ptr->left == nullptr) && (ptr->right == nullptr)) {  // delete if no child
             if (ptr == root) {
                 delete root;
                 root = nullptr;
             } else if (is_left) {
-                delete ptr;
+                delete parent_ptr->left;
                 parent_ptr->left = nullptr;
             } else {
-                delete ptr;
+                delete parent_ptr->right;
                 parent_ptr->right = nullptr;
             }
         } else if (ptr->right == nullptr) {  // delete if only left child
@@ -201,7 +204,7 @@ void BinaryTree<type>::remove(const type& value) {
                 root = ptr->left;
                 delete temp;
             } else if (is_left) {
-                parent_ptr->left = ptr->left;    
+                parent_ptr->left = ptr->left;
                 delete ptr;
             } else {
                 parent_ptr->right = ptr->left;
@@ -214,7 +217,7 @@ void BinaryTree<type>::remove(const type& value) {
                 root = ptr->right;
                 delete temp;
             } else if (is_left) {
-                parent_ptr->left = ptr->right;    
+                parent_ptr->left = ptr->right;
                 delete ptr;
             } else {
                 parent_ptr->right = ptr->right;
@@ -224,27 +227,25 @@ void BinaryTree<type>::remove(const type& value) {
             Node<type>* successor = ptr;
             Node<type>* parent_successor = ptr;
             Node<type>* child_successor = ptr->right;
-            type new_value = NULL;
 
             while (child_successor != nullptr) {
                 parent_successor = successor;
                 successor = child_successor;
                 child_successor = child_successor->left;
             }
+
             if (successor != ptr->right) {
                 parent_successor->left = successor->right;
-                new_value = successor->value;
-                delete successor;
+                ptr->value = successor->value;
+            } else {
+                ptr->right = successor->right;
             }
 
-            if (ptr == root) {
-                root->value = new_value;
-            } else if (is_left) {
-                parent_ptr->left->value = new_value;
-            } else {
-                parent_ptr->right->value = new_value;
-            }
+            ptr->value = successor->value;
+            delete successor;
         }
+
+        --size;
     } catch (...) {
         std::cout << "\nRemove method threw except\n";
     }
