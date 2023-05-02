@@ -43,14 +43,14 @@ public:
 
     bool isClear();  // checking for emptiness
 
-    bool clear();  // cleaning the tree
+    void clear();  // cleaning the tree
 
     int64_t getSize() const;  // returns the current number of objects
 
 private:
     Node<type>* root = nullptr;  // pointer to the root of the tree
-    int64_t min_size = std::numeric_limits<int64_t>::min();     
-    int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum int64_t value
+    int64_t min_size = std::numeric_limits<int64_t>::min();  // min int64_t value
+    int64_t max_size = std::numeric_limits<int64_t>::max();  // max int64_t value
     int64_t size = 0;  // current capacity of the tree
 };
 
@@ -236,7 +236,6 @@ void BinaryTree<type>::remove(const type& value) {
 
             if (successor != ptr->right) {
                 parent_successor->left = successor->right;
-                ptr->value = successor->value;
             } else {
                 ptr->right = successor->right;
             }
@@ -249,4 +248,24 @@ void BinaryTree<type>::remove(const type& value) {
     } catch (...) {
         std::cout << "\nRemove method threw except\n";
     }
+}
+
+template<typename type>
+bool BinaryTree<type>::isClear() {
+    if (root == nullptr) {
+        return true;
+    }
+    return false;
+}
+
+template<typename type>
+void BinaryTree<type>::clear() {
+    while (root != nullptr) {
+        remove(root->value);
+    }
+}
+
+template<typename type>
+int64_t BinaryTree<type>::getSize() const {
+    return size;
 }
