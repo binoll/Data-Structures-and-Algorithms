@@ -18,9 +18,5 @@ int main() {
 
     tree.add(4);
 
-    std::cout << tree.findMin();
-
-    tree.remove(7);
-
     return 0;
 }

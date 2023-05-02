@@ -70,7 +70,9 @@ BinaryTree<type>::BinaryTree(const type& value) {
 
 template<typename type>
 BinaryTree<type>::~BinaryTree() {
-
+    while (root != nullptr) {
+        remove(root->value);
+    }
 }
 
 template<typename type>
