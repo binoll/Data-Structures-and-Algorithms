@@ -254,7 +254,6 @@ void BinaryTree<type>::remove(const type& value) {
             ptr->value = successor->value;
             delete successor;
         }
-
         --size;
     } catch (...) {
         std::cout << "\nRemove method threw except\n";
@@ -299,7 +298,7 @@ void BinaryTree<type>::print(const Node<type>* node,
     }
     tab += 1;
     print(node->right, tab, stream);
-    for (int i = tab; i > 0; --i) {
+    for (int64_t i = tab; i > 0; --i) {
         stream << "    ";
     }
     stream << node->value << '\v';
@@ -312,7 +311,7 @@ std::ostream& operator<<(std::ostream& stream,
     if (tree.isClear()) {
         stream << "Tree is clear!\n";
     } else {
-        int tab = 0;
+        int64_t tab = 0;
 
         tree.print(tree.root, tab, stream);
     }
