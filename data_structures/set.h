@@ -29,8 +29,8 @@ class Set {
     int64_t getSize() const;  // the method returns
                               // the current size of the set
 
-    Set& operator=(const Set& set);  // overloading
-                                     // the operator for assignment
+    Set& operator=(const Set& set);  // operator
+                                     // overloading for assignment
 
     Set& operator=(Set&& set) noexcept;  // operator
                                          // overloading for assignment with carry

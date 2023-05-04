@@ -9,7 +9,6 @@ class Node {
 
     explicit Node(const type& value) : value(value) {}  // constructor
                                                         // with parameters
-
     ~Node() = default;  // destructor
 
     type value = 0;  // value
@@ -26,30 +25,35 @@ class BinaryTree {
 
     ~BinaryTree();  // destructor
 
-    bool find(const type& value);  // searching for an
-                                   // element in a binary search tree
+    bool find(const type& value) const;  // searching for an element
 
-    type findMin();  // searching min element
+    type findMin() const;  // searching min element
 
-    type findMax();  // searching max element
+    type findMax() const;  // searching max element
 
     void add(const type& value);  // add element
 
     void remove(const type& value);  // delete element
 
-    void traversalNRL();  // tree traversal NRL
+    void traversalNRL() const;  // tree traversal NRL
 
-    void traversalLNR();  // tree traversal LNR
+    void traversalLNR() const;  // tree traversal LNR
 
-    void traversalRNL();  // tree traversal RNL
+    void traversalRNL() const;  // tree traversal RNL
 
-    bool isClear();  // checking for emptiness
+    bool isClear() const;  // checking for emptiness
 
     void clear();  // cleaning the tree
 
-    int64_t getSize() const;  // returns the current number of objects
+    int64_t getSize() const;  // returns the current size of tree
+
+    template<typename new_type>
+    friend std::ostream& operator<<(std::ostream& stream,               // overloading an operator
+                                    const BinaryTree<new_type>& tree);  // to insert into a stream
 
  private:
+    void print(const Node<type>* node, int tab, std::ostream& stream) const;  // method for print tree
+
     Node<type>* root = nullptr;  // pointer to the root of the tree
     int64_t min_size = std::numeric_limits<int64_t>::min();  // min value
     int64_t max_size = std::numeric_limits<int64_t>::max();  // max value
@@ -78,7 +82,7 @@ BinaryTree<type>::~BinaryTree() {
 }
 
 template<typename type>
-bool BinaryTree<type>::find(const type& value) {
+bool BinaryTree<type>::find(const type& value) const {
     Node<type>* ptr = root;
 
     while (ptr != nullptr) {
@@ -94,7 +98,7 @@ bool BinaryTree<type>::find(const type& value) {
 }
 
 template<typename type>
-type BinaryTree<type>::findMin() {
+type BinaryTree<type>::findMin() const {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
 
@@ -109,7 +113,7 @@ type BinaryTree<type>::findMin() {
 }
 
 template<typename type>
-type BinaryTree<type>::findMax() {
+type BinaryTree<type>::findMax() const {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
 
@@ -131,6 +135,7 @@ void BinaryTree<type>::add(const type& value) {
         if (root == nullptr) {
             if (min_size <= size <= max_size) {
                 root = new Node<type>(value);
+
                 ++size;
             } else {
                 throw std::exception();
@@ -141,6 +146,7 @@ void BinaryTree<type>::add(const type& value) {
             if (ptr->value > value) {
                 if (ptr->left == nullptr) {
                     ptr->left = new Node<type>(value);
+
                     ++size;
                     return;
                 } else {
@@ -149,6 +155,7 @@ void BinaryTree<type>::add(const type& value) {
             } else {
                 if (ptr->right == nullptr) {
                     ptr->right = new Node<type>(value);
+
                     ++size;
                     return;
                 } else {
@@ -255,7 +262,22 @@ void BinaryTree<type>::remove(const type& value) {
 }
 
 template<typename type>
-bool BinaryTree<type>::isClear() {
+void BinaryTree<type>::traversalNRL() const {
+
+}
+
+template<typename type>
+void BinaryTree<type>::traversalLNR() const {
+
+}
+
+template<typename type>
+void BinaryTree<type>::traversalRNL() const {
+
+}
+
+template<typename type>
+bool BinaryTree<type>::isClear() const {
     if (root == nullptr) {
         return true;
     }
@@ -266,6 +288,33 @@ template<typename type>
 void BinaryTree<type>::clear() {
     while (root != nullptr) {
         remove(root->value);
+    }
+}
+
+template<typename type>
+void BinaryTree<type>::print(const Node<type>* node,
+                             int tab, std::ostream& stream) const {
+    if (node == nullptr) {
+        return;
+    }
+    tab += 1;
+    print(node->right, tab, stream);
+    for (int i = tab; i > 0; --i) {
+        stream << "    ";
+    }
+    stream << node->value << '\v';
+    print(node->left, tab, stream);
+}
+
+template<typename type>
+std::ostream& operator<<(std::ostream& stream,
+                         const BinaryTree<type>& tree) {
+    if (tree.isClear()) {
+        stream << "Tree is clear!\n";
+    } else {
+        int tab = 0;
+
+        tree.print(tree.root, tab, stream);
     }
 }
 
