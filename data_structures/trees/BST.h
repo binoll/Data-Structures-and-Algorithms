@@ -17,13 +17,13 @@ class Node {
 };
 
 template<typename type>
-class BinaryTree {
+class BinarySearchTree {
  public:
-    BinaryTree() = default;  // constructor without parameters
+    BinarySearchTree() = default;  // constructor without parameters
 
-    explicit BinaryTree(const type& value);  // constructor with parameters
+    explicit BinarySearchTree(const type& value);  // constructor with parameters
 
-    ~BinaryTree();  // destructor
+    ~BinarySearchTree();  // destructor
 
     bool find(const type& value) const;  // searching for an element
 
@@ -48,8 +48,8 @@ class BinaryTree {
     int64_t getSize() const;  // returns the current size of tree
 
     template<typename new_type>
-    friend std::ostream& operator<<(std::ostream& stream,               // overloading an operator
-                                    const BinaryTree<new_type>& tree);  // to insert into a stream
+    friend std::ostream& operator<<(std::ostream& stream,                     // overloading an operator
+                                    const BinarySearchTree<new_type>& tree);  // to insert into a stream
 
  private:
     void print_NLR(Node<type>* node) const;  // recursive method for traversal NRL
@@ -67,7 +67,7 @@ class BinaryTree {
 };
 
 template<typename type>
-BinaryTree<type>::BinaryTree(const type& value) {
+BinarySearchTree<type>::BinarySearchTree(const type& value) {
     try {
         if (min_size <= size <= max_size) {
             root = new Node<type>(value);
@@ -81,14 +81,14 @@ BinaryTree<type>::BinaryTree(const type& value) {
 }
 
 template<typename type>
-BinaryTree<type>::~BinaryTree() {
+BinarySearchTree<type>::~BinarySearchTree() {
     while (root != nullptr) {
         remove(root->value);
     }
 }
 
 template<typename type>
-bool BinaryTree<type>::find(const type& value) const {
+bool BinarySearchTree<type>::find(const type& value) const {
     Node<type>* ptr = root;
 
     while (ptr != nullptr) {
@@ -104,7 +104,7 @@ bool BinaryTree<type>::find(const type& value) const {
 }
 
 template<typename type>
-type BinaryTree<type>::findMin() const {
+type BinarySearchTree<type>::findMin() const {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
 
@@ -119,7 +119,7 @@ type BinaryTree<type>::findMin() const {
 }
 
 template<typename type>
-type BinaryTree<type>::findMax() const {
+type BinarySearchTree<type>::findMax() const {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
 
@@ -134,7 +134,7 @@ type BinaryTree<type>::findMax() const {
 }
 
 template<typename type>
-void BinaryTree<type>::add(const type& value) {
+void BinarySearchTree<type>::add(const type& value) {
     Node<type>* ptr = root;
 
     try {
@@ -175,7 +175,7 @@ void BinaryTree<type>::add(const type& value) {
 }
 
 template<typename type>
-void BinaryTree<type>::remove(const type& value) {
+void BinarySearchTree<type>::remove(const type& value) {
     Node<type>* ptr = root;
     Node<type>* parent_ptr = root;
     bool is_left = true;
@@ -267,7 +267,7 @@ void BinaryTree<type>::remove(const type& value) {
 }
 
 template<typename type>
-void BinaryTree<type>::print_NLR(Node<type> *node) const {
+void BinarySearchTree<type>::print_NLR(Node<type> *node) const {
     if (node == nullptr) {
         return;
     }
@@ -277,7 +277,7 @@ void BinaryTree<type>::print_NLR(Node<type> *node) const {
 }
 
 template<typename type>
-void BinaryTree<type>::print_LNR(Node<type> *node) const {
+void BinarySearchTree<type>::print_LNR(Node<type> *node) const {
     if (node == nullptr) {
         return;
     }
@@ -287,7 +287,7 @@ void BinaryTree<type>::print_LNR(Node<type> *node) const {
 }
 
 template<typename type>
-void BinaryTree<type>::print_RNL(Node<type> *node) const {
+void BinarySearchTree<type>::print_RNL(Node<type> *node) const {
     if (node == nullptr) {
         return;
     }
@@ -297,22 +297,22 @@ void BinaryTree<type>::print_RNL(Node<type> *node) const {
 }
 
 template<typename type>
-void BinaryTree<type>::traversalNLR() const {
+void BinarySearchTree<type>::traversalNLR() const {
     print_NLR(root);
 }
 
 template<typename type>
-void BinaryTree<type>::traversalLNR() const {
+void BinarySearchTree<type>::traversalLNR() const {
     print_LNR(root);
 }
 
 template<typename type>
-void BinaryTree<type>::traversalRNL() const {
+void BinarySearchTree<type>::traversalRNL() const {
     print_RNL(root);
 }
 
 template<typename type>
-bool BinaryTree<type>::isClear() const {
+bool BinarySearchTree<type>::isClear() const {
     if (root == nullptr) {
         return true;
     }
@@ -320,15 +320,15 @@ bool BinaryTree<type>::isClear() const {
 }
 
 template<typename type>
-void BinaryTree<type>::clear() {
+void BinarySearchTree<type>::clear() {
     while (root != nullptr) {
         remove(root->value);
     }
 }
 
 template<typename type>
-void BinaryTree<type>::print_tree(const Node<type>* node,
-                             int tab, std::ostream& stream) const {
+void BinarySearchTree<type>::print_tree(const Node<type>* node,
+                                        int tab, std::ostream& stream) const {
     if (node == nullptr) {
         return;
     }
@@ -343,7 +343,7 @@ void BinaryTree<type>::print_tree(const Node<type>* node,
 
 template<typename type>
 std::ostream& operator<<(std::ostream& stream,
-                         const BinaryTree<type>& tree) {
+                         const BinarySearchTree<type>& tree) {
     if (tree.isClear()) {
         stream << "Tree is clear!\n";
     } else {
@@ -355,6 +355,6 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 template<typename type>
-int64_t BinaryTree<type>::getSize() const {
+int64_t BinarySearchTree<type>::getSize() const {
     return size;
 }
