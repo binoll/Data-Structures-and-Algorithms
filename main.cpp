@@ -2,7 +2,7 @@
 #include "data_structures/set.h"
 
 int main() {
-    Set<int> set1;
+    Set<int> set;
     BinaryTree<int> tree;
 
     return 0;

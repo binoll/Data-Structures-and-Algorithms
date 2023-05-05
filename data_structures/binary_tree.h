@@ -35,7 +35,7 @@ class BinaryTree {
 
     void remove(const type& value);  // delete element
 
-    void traversalNRL() const;  // tree traversal NRL
+    void traversalNLR() const;  // tree traversal NRL
 
     void traversalLNR() const;  // tree traversal LNR
 
@@ -52,7 +52,13 @@ class BinaryTree {
                                     const BinaryTree<new_type>& tree);  // to insert into a stream
 
  private:
-    void print(const Node<type>* node, int tab, std::ostream& stream) const;  // method for print tree
+    void print_NLR(Node<type>* node) const;  // recursive method for traversal NRL
+
+    void print_LNR(Node<type>* node) const;  // recursive method for traversal LNR
+
+    void print_RNL(Node<type>* node) const;  // recursive method for traversal RNL
+
+    void print_tree(const Node<type>* node, int tab, std::ostream& stream) const;  // method for print tree
 
     Node<type>* root = nullptr;  // pointer to the root of the tree
     int64_t min_size = std::numeric_limits<int64_t>::min();  // min value
@@ -261,18 +267,48 @@ void BinaryTree<type>::remove(const type& value) {
 }
 
 template<typename type>
-void BinaryTree<type>::traversalNRL() const {
+void BinaryTree<type>::print_NLR(Node<type> *node) const {
+    if (node == nullptr) {
+        return;
+    }
+    std::cout << node->value << ' ';
+    print_NLR(node->left);
+    print_NLR(node->right);
+}
 
+template<typename type>
+void BinaryTree<type>::print_LNR(Node<type> *node) const {
+    if (node == nullptr) {
+        return;
+    }
+    print_LNR(node->left);
+    std::cout << node->value << ' ';
+    print_LNR(node->right);
+}
+
+template<typename type>
+void BinaryTree<type>::print_RNL(Node<type> *node) const {
+    if (node == nullptr) {
+        return;
+    }
+    print_RNL(node->right);
+    std::cout << node->value << ' ';
+    print_RNL(node->left);
+}
+
+template<typename type>
+void BinaryTree<type>::traversalNLR() const {
+    print_NLR(root);
 }
 
 template<typename type>
 void BinaryTree<type>::traversalLNR() const {
-
+    print_LNR(root);
 }
 
 template<typename type>
 void BinaryTree<type>::traversalRNL() const {
-
+    print_RNL(root);
 }
 
 template<typename type>
@@ -291,18 +327,18 @@ void BinaryTree<type>::clear() {
 }
 
 template<typename type>
-void BinaryTree<type>::print(const Node<type>* node,
+void BinaryTree<type>::print_tree(const Node<type>* node,
                              int tab, std::ostream& stream) const {
     if (node == nullptr) {
         return;
     }
     tab += 1;
-    print(node->right, tab, stream);
+    print_tree(node->right, tab, stream);
     for (int64_t i = tab; i > 0; --i) {
         stream << "    ";
     }
     stream << node->value << '\v';
-    print(node->left, tab, stream);
+    print_tree(node->left, tab, stream);
 }
 
 template<typename type>
@@ -313,7 +349,7 @@ std::ostream& operator<<(std::ostream& stream,
     } else {
         int64_t tab = 0;
 
-        tree.print(tree.root, tab, stream);
+        tree.print_tree(tree.root, tab, stream);
     }
 }
 
