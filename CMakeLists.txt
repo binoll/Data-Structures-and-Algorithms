@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
-project(Algorithms)
+project(Data-Structures-and-Algorithms)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Algorithms main.cpp "data_structures/set.h" "data_structures/binary_tree.h" "libs.h")
+add_executable(Data-Structures-and-Algorithms main.cpp "data_structures/set.h" "data_structures/trees/binary_search_tree.h" "libs.h")

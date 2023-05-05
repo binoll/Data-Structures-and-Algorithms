@@ -1,4 +1,4 @@
-#include "data_structures/binary_tree.h"
+#include "data_structures/trees/binary_search_tree.h"
 #include "data_structures/set.h"
 
 int main() {
