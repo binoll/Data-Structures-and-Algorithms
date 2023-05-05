@@ -83,16 +83,19 @@ Set<type>::Set(const Set& set) {
 
 template<typename type>
 Set<type>::Set(Set&& set) noexcept {
-    ptr = set.ptr;
-    size = set.size;
-    set.ptr = nullptr;
-    set.size = 0;
+    if (this != &set) {
+        ptr = set.ptr;
+        size = set.size;
+        set.ptr = nullptr;
+        set.size = 0;
+    }
 }
 
 template<typename type>
 Set<type>::~Set() {
     try {
         delete[] ptr;
+        size = 0;
     } catch (...) {
         std::cout << "\nProblems with destructor\n";
     }

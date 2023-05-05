@@ -11,6 +11,7 @@ class Node {
                                                         // with parameters
     ~Node() = default;  // destructor
 
+    int64_t balance_value = 0;  // balance value
     type value = 0;  // value
     Node<type>* left = nullptr;  // pointer to the left node
     Node<type>* right = nullptr;  // pointer to the right node
