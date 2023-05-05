@@ -351,6 +351,7 @@ std::ostream& operator<<(std::ostream& stream,
 
         tree.print_tree(tree.root, tab, stream);
     }
+    return stream;
 }
 
 template<typename type>
