@@ -17,31 +17,31 @@ class Set {
 
     bool find(const type& value) const;  // item search, return bool
 
-    int64_t findIndex(const type& value) const;  // item search, return index
-                                                 // (if element is not in set then -1)
+    int64_t findIndex(const type& value) const;  // return index (if element is not in set then -1)
+
     bool add(const type& value);  // adding an element to a set
 
     bool remove(const type& value);  // removing an element from a set
 
     void clear();  // clear set
 
-    int64_t getSize() const;  // the method returns
-                              // the current size of the set
-    Set<type>& operator=(const Set<type>& set);  // operator
-                                                 // overloading for assignment
-    Set<type>& operator=(Set<type>&& set) noexcept;  // operator
-                                                     // overloading for assignment with carry
-    Set<type> operator*(const Set<type>& set);  // operator overload for the intersection of two sets
+    int64_t getSize() const;  // method returns current size of the set
 
-    Set<type> operator+(const Set<type>& set);  // operator overload for combining two sets
+    Set<type>& operator=(const Set<type>& set);  // overloading for assignment
 
-    Set<type> operator-(const Set<type>& set);  // operator overload for the difference of two sets
+    Set<type>& operator=(Set<type>&& set) noexcept;  // for assignment with carry
 
-    Set<type> operator^(const Set<type>& set);  // operator overload for the symmetric difference of two sets
+    Set<type> operator*(const Set<type>& set);  // for the intersection of two sets
+
+    Set<type> operator+(const Set<type>& set);  // for combining two sets
+
+    Set<type> operator-(const Set<type>& set);  // for the difference of two sets
+
+    Set<type> operator^(const Set<type>& set);  // for the symmetric difference of two sets
 
     template<typename new_type>
-    friend std::ostream& operator<<(std::ostream& stream,       // overloading an operator
-                                    const Set<new_type>& set);  // to insert into a stream
+    friend std::ostream& operator<<(std::ostream& stream,
+                                    const Set<new_type>& set);  // for print
 
  private:
     int64_t size = 0;  // current capacity of the set
@@ -170,10 +170,10 @@ bool Set<type>::remove(const type& value) {
                 delete[] arr;
                 arr = nullptr;
             } else if (size_before == 0) {
-                type *ptr_after = new type[size_after];
+                type *arr_after = new type[size_after];
 
                 for (int64_t i = 0, count = (size_before + 1); count < size; ++count, ++i) {
-                    ptr_after[i] = arr[count];
+                    arr_after[i] = arr[count];
                 }
 
                 --size;
@@ -181,14 +181,14 @@ bool Set<type>::remove(const type& value) {
                 arr = new type[size];
 
                 for (int64_t i = 0, count = size_before; i < size_after; ++count, ++i) {
-                    arr[count] = ptr_after[i];
+                    arr[count] = arr_after[i];
                 }
-                delete[] ptr_after;
+                delete[] arr_after;
             } else if (size_after == 0) {
-                type *ptr_before = new type[size_before];
+                type *arr_before = new type[size_before];
 
                 for (int64_t count = 0; count < size_before; ++count) {
-                    ptr_before[count] = arr[count];
+                    arr_before[count] = arr[count];
                 }
 
                 --size;
@@ -196,9 +196,9 @@ bool Set<type>::remove(const type& value) {
                 arr = new type[size];
 
                 for (int64_t count = 0; count < size_before; ++count) {
-                    arr[count] = ptr_before[count];
+                    arr[count] = arr_before[count];
                 }
-                delete[] ptr_before;
+                delete[] arr_before;
             } else {
                 type *ptr_before = new type[size_before];
                 type *ptr_after = new type[size_after];

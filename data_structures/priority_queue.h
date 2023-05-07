@@ -18,6 +18,10 @@ class QueueNode {
 
     void setValue(const type& value);  // set value
 
+    template<typename new_type>
+    friend std::ostream& operator<<(std::ostream& stream,
+                                    const QueueNode<new_type>& queue);  // for print
+
  private:
     type value;  // the value that the node stores
     int64_t priority = 0;  // node priority
@@ -38,19 +42,25 @@ class PriorityQueue {
 
     void push(const type& value, const int64_t& priority);  // push element
 
-    QueueNode<type> pop();  //pop element, return node
+    QueueNode<type> popMax();  //pop element with max priority
 
-    void clear();  // clear set
+    QueueNode<type> popMin();  //pop element with min priority
 
-    int64_t getSize() const;  // the method returns
-                              // the current size of the set
-    PriorityQueue<type>& operator=(const PriorityQueue<type>& queue);  // operator
-                                                                       // overloading for assignment
-    PriorityQueue<type>& operator=(PriorityQueue<type>&& queue) noexcept;  // operator
-                                                                           // overloading for assignment with carry
+    void clear();  // clear queue
+
+    int64_t getSize() const;  // return size of the queue
+
+    QueueNode<type> findMax() const;  // find element with max priority
+
+    QueueNode<type> findMin() const;  // find element with max priority
+
+    PriorityQueue<type>& operator=(const PriorityQueue<type>& queue);  // for assignment
+
+    PriorityQueue<type>& operator=(PriorityQueue<type>&& queue) noexcept;  // for assignment with carry
+
     template<typename new_type>
-    friend std::ostream& operator<<(std::ostream& stream,                   // overloading an operator
-                                    const PriorityQueue<new_type>& queue);  // to insert into a stream
+    friend std::ostream& operator<<(std::ostream& stream,
+                                    const PriorityQueue<new_type>& queue);  // for print
 
  private:
     void siftUp();  // for sift up
@@ -79,6 +89,13 @@ int64_t QueueNode<type>::getPriority() const {
 template<typename type>
 void QueueNode<type>::setValue(const type& value) {
     this->value = value;
+}
+
+template<typename type>
+std::ostream& operator<<(std::ostream& stream,
+                         const QueueNode<type>& node) {
+    stream << "{ " << node.value << ", " << node.priority << " }";
+    return stream;
 }
 
 template<typename type>
@@ -186,7 +203,7 @@ void PriorityQueue<type>::push(const type& value, const int64_t& priority) {
 }
 
 template<typename type>
-QueueNode<type> PriorityQueue<type>::pop() {
+QueueNode<type> PriorityQueue<type>::popMax() {
     if (size == 0) {
         std::cout << "\nProblems with pop method!\n";
         return QueueNode<type>(0, 0);
@@ -207,6 +224,86 @@ QueueNode<type> PriorityQueue<type>::pop() {
         std::cout << "\nProblems with pop method\n";
         return QueueNode<type>(0, 0);
     }
+}
+
+template<typename type>
+QueueNode<type> PriorityQueue<type>::popMin() {
+    QueueNode<type> node = arr[0];
+    int64_t size_before = 0;
+    int64_t size_after = 0;
+
+    for (int64_t i = 0; i < size; ++i) {
+        if (node.getPriority() > arr[i].getPriority()) {
+            node = arr[i];
+            size_before = i;
+            size_after = size - (i + 1);
+        }
+    }
+
+    try {
+        if (size == 1) {
+            --size;
+            delete[] arr;
+            arr = nullptr;
+        } else if (size_before == 0) {
+            QueueNode<type>* arr_after = new QueueNode<type>[size_after];
+
+            for (int64_t i = 0, count = (size_before + 1); count < size; ++count, ++i) {
+                arr_after[i] = arr[count];
+            }
+
+            --size;
+            delete[] arr;
+            arr = new QueueNode<type>[size];
+
+            for (int64_t i = 0, count = size_before; i < size_after; ++count, ++i) {
+                arr[count] = arr_after[i];
+            }
+            delete[] arr_after;
+        } else if (size_after == 0) {
+            QueueNode<type>* arr_before = new QueueNode<type>[size_before];
+
+            for (int64_t count = 0; count < size_before; ++count) {
+                arr_before[count] = arr[count];
+            }
+
+            --size;
+            delete[] arr;
+            arr = new QueueNode<type>[size];
+
+            for (int64_t count = 0; count < size_before; ++count) {
+                arr[count] = arr_before[count];
+            }
+            delete[] arr_before;
+        } else {
+            QueueNode<type> *ptr_before = new QueueNode<type>[size_before];
+            QueueNode<type> *ptr_after = new QueueNode<type>[size_after];
+
+            for (int64_t count = 0; count < size_before; ++count) {
+                ptr_before[count] = arr[count];
+            }
+            for (int64_t i = 0, count = (size_before + 1); count < size; ++count, ++i) {
+                ptr_after[i] = arr[count];
+            }
+
+            --size;
+            delete[] arr;
+            arr = new QueueNode<type>[size];
+
+            for (int64_t count = 0; count < size_before; ++count) {
+                arr[count] = ptr_before[count];
+            }
+            for (int64_t i = 0, count = size_before; i < size_after; ++count, ++i) {
+                arr[count] = ptr_after[i];
+            }
+            delete[] ptr_before;
+            delete[] ptr_after;
+        }
+    } catch (...) {
+        std::cout << "\nProblems with remove element\n";
+        return QueueNode<type>(0, 0);
+    }
+    return node;
 }
 
 template<typename type>
@@ -253,6 +350,23 @@ PriorityQueue<type>& PriorityQueue<type>::operator=(PriorityQueue<type>&& queue)
         queue.size = NULL;
     }
     return *this;
+}
+
+template<typename type>
+QueueNode<type> PriorityQueue<type>::findMax() const {
+    return arr[0];
+}
+
+template<typename type>
+QueueNode<type> PriorityQueue<type>::findMin() const {
+    QueueNode<type> node = arr[0];
+
+    for (int64_t i = 0; i < size; ++i) {
+        if (node.getPriority() > arr[i].getPriority()) {
+            node = arr[i];
+        }
+    }
+    return node;
 }
 
 template<typename type>

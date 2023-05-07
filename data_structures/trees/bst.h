@@ -7,8 +7,8 @@ class TreeNode {
  public:
     TreeNode() = default;  // constructor without parameters
 
-    explicit TreeNode(const type& value);  // constructor
-                                                        // with parameters
+    explicit TreeNode(const type& value);  // constructor with parameters
+
     ~TreeNode() = default;  // destructor
 
     type value = 0;  // value
@@ -27,9 +27,9 @@ class BinarySearchTree {
 
     bool find(const type& value) const;  // searching for an element
 
-    type findMin() const;  // searching min element
+    type findMin() const;  // return min element
 
-    type findMax() const;  // searching max element
+    type findMax() const;  // return max element
 
     void add(const type& value);  // add element
 
@@ -48,8 +48,8 @@ class BinarySearchTree {
     int64_t getSize() const;  // returns the current size of tree
 
     template<typename new_type>
-    friend std::ostream& operator<<(std::ostream& stream,                     // overloading an operator
-                                    const BinarySearchTree<new_type>& tree);  // to insert into a stream
+    friend std::ostream& operator<<(std::ostream& stream,
+                                    const BinarySearchTree<new_type>& tree);  // for print
 
  private:
     void print_NLR(TreeNode<type>* node) const;  // recursive method for traversal NRL
@@ -74,6 +74,7 @@ BinarySearchTree<type>::BinarySearchTree(const type& value) {
     try {
         if (min_size <= size <= max_size) {
             root = new TreeNode<type>(value);
+
             ++size;
         } else {
             throw std::exception();
