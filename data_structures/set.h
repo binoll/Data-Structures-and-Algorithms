@@ -19,7 +19,6 @@ class Set {
 
     int64_t findIndex(const type& value) const;  // item search, return index
                                                  // (if element is not in set then -1)
-
     bool add(const type& value);  // adding an element to a set
 
     bool remove(const type& value);  // removing an element from a set
@@ -28,20 +27,17 @@ class Set {
 
     int64_t getSize() const;  // the method returns
                               // the current size of the set
+    Set<type>& operator=(const Set<type>& set);  // operator
+                                                 // overloading for assignment
+    Set<type>& operator=(Set<type>&& set) noexcept;  // operator
+                                                     // overloading for assignment with carry
+    Set<type> operator*(const Set<type>& set);  // operator overload for the intersection of two sets
 
-    Set& operator=(const Set& set);  // operator
-                                     // overloading for assignment
+    Set<type> operator+(const Set<type>& set);  // operator overload for combining two sets
 
-    Set& operator=(Set&& set) noexcept;  // operator
-                                         // overloading for assignment with carry
+    Set<type> operator-(const Set<type>& set);  // operator overload for the difference of two sets
 
-    Set operator*(const Set& set);  // operator overload for the intersection of two sets
-
-    Set operator+(const Set& set);  // operator overload for combining two sets
-
-    Set operator-(const Set& set);  // operator overload for the difference of two sets
-
-    Set operator^(const Set& set);  // operator overload for the symmetric difference of two sets
+    Set<type> operator^(const Set<type>& set);  // operator overload for the symmetric difference of two sets
 
     template<typename new_type>
     friend std::ostream& operator<<(std::ostream& stream,       // overloading an operator
@@ -50,31 +46,34 @@ class Set {
  private:
     int64_t size = 0;  // current capacity of the set
     int64_t max_size = std::numeric_limits<int64_t>::max();  // maximum value
-    type* ptr = nullptr;  // indicates the array in which the elements of the set are stored
+    type* arr = nullptr;  // indicates the array in which the elements of the set are stored
 };
 
 template<typename type>
 Set<type>::Set(const type& value) {
     try {
-        ptr = new type[size + 1];
-
-        ptr[size] = value;
-        ++size;
+        arr = new type[++size];
+        arr[size - 1] = value;
     } catch (...) {
         std::cout << "\nProblems with constructor\n";
     }
 }
 
 template<typename type>
-Set<type>::Set(const Set& set) {
-    this->size = set.size;
-
+Set<type>::Set(const Set<type>& set) {
     try {
-        delete[] ptr;
-        ptr = new type[size];
+        this->size = set.size;
 
-        for (int64_t i = 0; i < size; ++i) {
-            ptr[i] = set.ptr[i];
+        if (set.size == 0) {
+            delete[] arr;
+            arr = nullptr;
+        } else {
+            delete[] arr;
+            arr = new type[size];
+
+            for (int64_t i = 0; i < size; ++i) {
+                arr[i] = set.arr[i];
+            }
         }
     } catch (...) {
         std::cout << "\nProblems with copy constructor\n";
@@ -82,11 +81,11 @@ Set<type>::Set(const Set& set) {
 }
 
 template<typename type>
-Set<type>::Set(Set&& set) noexcept {
+Set<type>::Set(Set<type>&& set) noexcept {
     if (this != &set) {
-        ptr = set.ptr;
+        arr = set.arr;
         size = set.size;
-        set.ptr = nullptr;
+        set.arr = nullptr;
         set.size = 0;
     }
 }
@@ -94,7 +93,8 @@ Set<type>::Set(Set&& set) noexcept {
 template<typename type>
 Set<type>::~Set() {
     try {
-        delete[] ptr;
+        delete[] arr;
+        arr = nullptr;
         size = 0;
     } catch (...) {
         std::cout << "\nProblems with destructor\n";
@@ -104,7 +104,7 @@ Set<type>::~Set() {
 template<typename type>
 bool Set<type>::find(const type& value) const {
     for (int64_t i = 0; i < size; ++i) {
-        if (ptr[i] == value) {
+        if (arr[i] == value) {
             return true;
         }
     }
@@ -114,7 +114,7 @@ bool Set<type>::find(const type& value) const {
 template<typename type>
 int64_t Set<type>::findIndex(const type& value) const {
     for (int64_t i = 0; i < size; ++i) {
-        if (ptr[i] == value) {
+        if (arr[i] == value) {
             return i;
         }
     }
@@ -127,41 +127,29 @@ bool Set<type>::add(const type& value) {
         std::cout << "\nProblems with add element, no memory!\n";
         return false;
     } else if (findIndex(value) == -1) {
-        if (ptr == nullptr) {
-            try {
+        try {
+            if (arr == nullptr) {
                 int64_t index = size;
 
                 ++size;
-                ptr = new type[size];
-                ptr[index] = value;
-            } catch (...) {
-                std::cout << "\nProblems with add element\n";
-                return false;
-            }
-        } else {
-            type* new_ptr = ptr;
-            int64_t index = size;
+                arr = new type[size];
+                arr[index] = value;
+            } else {
+                type *new_ptr = arr;
+                int64_t index = size;
 
-            try {
                 ++size;
-                ptr = nullptr;
-                ptr = new type[size];
-            } catch (...) {
-                std::cout << "\nProblems with add element\n";
-                return false;
-            }
-
-            for (int64_t i = 0; i < index; ++i) {
-                ptr[i] = new_ptr[i];
-            }
-            ptr[index] = value;
-
-            try {
+                arr = nullptr;
+                arr = new type[size];
+                for (int64_t i = 0; i < index; ++i) {
+                    arr[i] = new_ptr[i];
+                }
+                arr[index] = value;
                 delete[] new_ptr;
-            } catch (...) {
-                std::cout << "\nProblems with add element\n";
-                return false;
             }
+        } catch (...) {
+            std::cout << "\nProblems with add element\n";
+            return false;
         }
         return true;
     } else {
@@ -176,86 +164,68 @@ bool Set<type>::remove(const type& value) {
     int64_t size_before = index;
 
     if (index != -1) {
-        if (size == 1) {
-            try {
+        try {
+            if (size == 1) {
                 --size;
-                delete[] ptr;
-                ptr = nullptr;
-            } catch (...) {
-                std::cout << "\nProblems with remove element\n";
-                return false;
-            }
-        } else if (size_before == 0) {
-            try {
-                type* ptr_after = new type[size_after];
+                delete[] arr;
+                arr = nullptr;
+            } else if (size_before == 0) {
+                type *ptr_after = new type[size_after];
 
                 for (int64_t i = 0, count = (size_before + 1); count < size; ++count, ++i) {
-                    ptr_after[i] = ptr[count];
+                    ptr_after[i] = arr[count];
                 }
 
                 --size;
-                delete[] ptr;
-                ptr = new type[size];
+                delete[] arr;
+                arr = new type[size];
 
                 for (int64_t i = 0, count = size_before; i < size_after; ++count, ++i) {
-                    ptr[count] = ptr_after[i];
+                    arr[count] = ptr_after[i];
                 }
-
                 delete[] ptr_after;
-            } catch (...) {
-                std::cout << "\nProblems with remove element\n";
-                return false;
-            }
-        } else if (size_after == 0) {
-            try {
-                type* ptr_before = new type[size_before];
+            } else if (size_after == 0) {
+                type *ptr_before = new type[size_before];
 
                 for (int64_t count = 0; count < size_before; ++count) {
-                    ptr_before[count] = ptr[count];
+                    ptr_before[count] = arr[count];
                 }
 
                 --size;
-                delete[] ptr;
-                ptr = new type[size];
+                delete[] arr;
+                arr = new type[size];
 
                 for (int64_t count = 0; count < size_before; ++count) {
-                    ptr[count] = ptr_before[count];
+                    arr[count] = ptr_before[count];
                 }
-
                 delete[] ptr_before;
-            } catch (...) {
-                std::cout << "\nProblems with remove element\n";
-                return false;
-            }
-        } else {
-            try {
-                type* ptr_before = new type[size_before];
-                type* ptr_after = new type[size_after];
+            } else {
+                type *ptr_before = new type[size_before];
+                type *ptr_after = new type[size_after];
 
                 for (int64_t count = 0; count < size_before; ++count) {
-                    ptr_before[count] = ptr[count];
+                    ptr_before[count] = arr[count];
                 }
                 for (int64_t i = 0, count = (size_before + 1); count < size; ++count, ++i) {
-                    ptr_after[i] = ptr[count];
+                    ptr_after[i] = arr[count];
                 }
 
                 --size;
-                delete[] ptr;
-                ptr = new type[size];
+                delete[] arr;
+                arr = new type[size];
 
                 for (int64_t count = 0; count < size_before; ++count) {
-                    ptr[count] = ptr_before[count];
+                    arr[count] = ptr_before[count];
                 }
                 for (int64_t i = 0, count = size_before; i < size_after; ++count, ++i) {
-                    ptr[count] = ptr_after[i];
+                    arr[count] = ptr_after[i];
                 }
-
                 delete[] ptr_before;
                 delete[] ptr_after;
-            } catch (...) {
-                std::cout << "\nProblems with remove element\n";
-                return false;
             }
+        } catch (...) {
+            std::cout << "\nProblems with remove element\n";
+            return false;
         }
         return true;
     } else {
@@ -266,11 +236,9 @@ bool Set<type>::remove(const type& value) {
 template<typename type>
 void Set<type>::clear() {
     try {
-        if (ptr != nullptr) {
-            delete[] ptr;
-            ptr = nullptr;
-            size = 0;
-        }
+        delete[] arr;
+        arr = nullptr;
+        size = 0;
     } catch (...) {
         std::cout << "\nProblems with clear element\n";
     }
@@ -282,16 +250,16 @@ int64_t Set<type>::getSize() const {
 }
 
 template<typename type>
-Set<type> &Set<type>::operator=(const Set& set) {
+Set<type>& Set<type>::operator=(const Set<type>& set) {
     if (this != &set) {
         try {
             this->size = set.size;
 
-            delete[] ptr;
-            ptr = new type[size];
+            delete[] arr;
+            arr = new type[size];
 
             for (int64_t i = 0; i < size; ++i) {
-                ptr[i] = set.ptr[i];
+                arr[i] = set.arr[i];
             }
         } catch (...) {
             std::cout << "\nProblems with constructor\n";
@@ -301,30 +269,30 @@ Set<type> &Set<type>::operator=(const Set& set) {
 }
 
 template<typename type>
-Set<type>& Set<type>::operator=(Set&& set) noexcept {
+Set<type>& Set<type>::operator=(Set<type>&& set) noexcept {
     if (this != &set) {
-        ptr = set.ptr;
+        arr = set.arr;
         size = set.size;
-        set.ptr = nullptr;
+        set.arr = nullptr;
         set.size = NULL;
     }
     return *this;
 }
 
 template<typename type>
-Set<type> Set<type>::operator*(const Set& set) {
+Set<type> Set<type>::operator*(const Set<type>& set) {
     Set<type> new_set;
 
     if (getSize() > set.getSize()) {
         for (int64_t i = 0; i < getSize(); ++i) {
-            if (set.find(ptr[i])) {
-                new_set.add(ptr[i]);
+            if (set.find(arr[i])) {
+                new_set.add(arr[i]);
             }
         }
     } else {
         for (int64_t i = 0; i < set.getSize(); ++i) {
-            if (find(set.ptr[i])) {
-                new_set.add(set.ptr[i]);
+            if (find(set.arr[i])) {
+                new_set.add(set.arr[i]);
             }
         }
     }
@@ -332,30 +300,30 @@ Set<type> Set<type>::operator*(const Set& set) {
 }
 
 template<typename type>
-Set<type> Set<type>::operator+(const Set& set) {
+Set<type> Set<type>::operator+(const Set<type>& set) {
     Set<type> new_set(*this);
 
     for (int64_t i = 0; i < set.getSize(); ++i) {
-        new_set.add(set.ptr[i]);
+        new_set.add(set.arr[i]);
     }
     return new_set;
 }
 
 template<typename type>
-Set<type> Set<type>::operator-(const Set &set) {
+Set<type> Set<type>::operator-(const Set<type>& set) {
     Set temp_set = *this * set;
     Set new_set(*this);
 
     for (int64_t i = 0; i < temp_set.getSize(); ++i) {
-        if (find(temp_set.ptr[i])) {
-            new_set.remove(temp_set.ptr[i]);
+        if (find(temp_set.arr[i])) {
+            new_set.remove(temp_set.arr[i]);
         }
     }
     return new_set;
 }
 
 template<typename type>
-Set<type> Set<type>::operator^(const Set& set) {
+Set<type> Set<type>::operator^(const Set<type>& set) {
     Set new_set = (*this + set) - (*this * set);
     return new_set;
 }
@@ -365,13 +333,13 @@ std::ostream& operator<<(std::ostream& stream, const Set<type>& set) {
     int64_t count = 0;
 
     stream << "{ ";
-    if (set.getSize() != 0) {
+    if (set.size != 0) {
         for (int64_t i = 0; i < set.size; ++i) {
             if (count == 0) {
-                std::cout << static_cast<type>(set.ptr[i]);
+                stream << static_cast<type>(set.arr[i]);
             } else {
-                std::cout << ", ";
-                std::cout << static_cast<type>(set.ptr[i]);
+                stream << ", ";
+                stream << static_cast<type>(set.arr[i]);
             }
             ++count;
         }

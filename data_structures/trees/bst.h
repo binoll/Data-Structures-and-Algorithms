@@ -3,17 +3,17 @@
 #include "../../libs.h"
 
 template<typename type>
-class Node {
+class TreeNode {
  public:
-    Node() = default;  // constructor without parameters
+    TreeNode() = default;  // constructor without parameters
 
-    explicit Node(const type& value) : value(value) {}  // constructor
+    explicit TreeNode(const type& value);  // constructor
                                                         // with parameters
-    ~Node() = default;  // destructor
+    ~TreeNode() = default;  // destructor
 
     type value = 0;  // value
-    Node<type>* left = nullptr;  // pointer to the left node
-    Node<type>* right = nullptr;  // pointer to the right node
+    TreeNode<type>* left = nullptr;  // pointer to the left node
+    TreeNode<type>* right = nullptr;  // pointer to the right node
 };
 
 template<typename type>
@@ -52,25 +52,28 @@ class BinarySearchTree {
                                     const BinarySearchTree<new_type>& tree);  // to insert into a stream
 
  private:
-    void print_NLR(Node<type>* node) const;  // recursive method for traversal NRL
+    void print_NLR(TreeNode<type>* node) const;  // recursive method for traversal NRL
 
-    void print_LNR(Node<type>* node) const;  // recursive method for traversal LNR
+    void print_LNR(TreeNode<type>* node) const;  // recursive method for traversal LNR
 
-    void print_RNL(Node<type>* node) const;  // recursive method for traversal RNL
+    void print_RNL(TreeNode<type>* node) const;  // recursive method for traversal RNL
 
-    void print_tree(const Node<type>* node, int tab, std::ostream& stream) const;  // method for print tree
+    void print_tree(const TreeNode<type>* node, int tab, std::ostream& stream) const;  // method for print tree
 
-    Node<type>* root = nullptr;  // pointer to the root of the tree
+    TreeNode<type>* root = nullptr;  // pointer to the root of the tree
     int64_t min_size = std::numeric_limits<int64_t>::min();  // min value
     int64_t max_size = std::numeric_limits<int64_t>::max();  // max value
     int64_t size = 0;  // current capacity of the tree
 };
 
 template<typename type>
+TreeNode<type>::TreeNode(const type &value) : value(value) {}
+
+template<typename type>
 BinarySearchTree<type>::BinarySearchTree(const type& value) {
     try {
         if (min_size <= size <= max_size) {
-            root = new Node<type>(value);
+            root = new TreeNode<type>(value);
             ++size;
         } else {
             throw std::exception();
@@ -89,7 +92,7 @@ BinarySearchTree<type>::~BinarySearchTree() {
 
 template<typename type>
 bool BinarySearchTree<type>::find(const type& value) const {
-    Node<type>* ptr = root;
+    TreeNode<type>* ptr = root;
 
     while (ptr != nullptr) {
         if (ptr->value == value) {
@@ -105,8 +108,8 @@ bool BinarySearchTree<type>::find(const type& value) const {
 
 template<typename type>
 type BinarySearchTree<type>::findMin() const {
-    Node<type>* ptr = root;
-    Node<type>* parent_ptr = root;
+    TreeNode<type>* ptr = root;
+    TreeNode<type>* parent_ptr = root;
 
     if (ptr == nullptr) {
         return NULL;
@@ -120,8 +123,8 @@ type BinarySearchTree<type>::findMin() const {
 
 template<typename type>
 type BinarySearchTree<type>::findMax() const {
-    Node<type>* ptr = root;
-    Node<type>* parent_ptr = root;
+    TreeNode<type>* ptr = root;
+    TreeNode<type>* parent_ptr = root;
 
     if (ptr == nullptr) {
         return NULL;
@@ -135,12 +138,12 @@ type BinarySearchTree<type>::findMax() const {
 
 template<typename type>
 void BinarySearchTree<type>::add(const type& value) {
-    Node<type>* ptr = root;
+    TreeNode<type>* ptr = root;
 
     try {
         if (root == nullptr) {
             if (min_size <= size <= max_size) {
-                root = new Node<type>(value);
+                root = new TreeNode<type>(value);
 
                 ++size;
             } else {
@@ -151,7 +154,7 @@ void BinarySearchTree<type>::add(const type& value) {
         while (true) {
             if (ptr->value > value) {
                 if (ptr->left == nullptr) {
-                    ptr->left = new Node<type>(value);
+                    ptr->left = new TreeNode<type>(value);
 
                     ++size;
                     return;
@@ -160,7 +163,7 @@ void BinarySearchTree<type>::add(const type& value) {
                 }
             } else {
                 if (ptr->right == nullptr) {
-                    ptr->right = new Node<type>(value);
+                    ptr->right = new TreeNode<type>(value);
 
                     ++size;
                     return;
@@ -176,8 +179,8 @@ void BinarySearchTree<type>::add(const type& value) {
 
 template<typename type>
 void BinarySearchTree<type>::remove(const type& value) {
-    Node<type>* ptr = root;
-    Node<type>* parent_ptr = root;
+    TreeNode<type>* ptr = root;
+    TreeNode<type>* parent_ptr = root;
     bool is_left = true;
 
     if (!find(value)) {
@@ -216,7 +219,7 @@ void BinarySearchTree<type>::remove(const type& value) {
             }
         } else if (ptr->right == nullptr) {  // delete if only left child
             if (ptr == root) {
-                Node<type>* temp = root;
+                TreeNode<type>* temp = root;
 
                 root = ptr->left;
                 delete temp;
@@ -229,7 +232,7 @@ void BinarySearchTree<type>::remove(const type& value) {
             }
         } else if (ptr->left == nullptr) {  // delete if only right child
             if (ptr == root) {
-                Node<type>* temp = root;
+                TreeNode<type>* temp = root;
 
                 root = ptr->right;
                 delete temp;
@@ -241,9 +244,9 @@ void BinarySearchTree<type>::remove(const type& value) {
                 delete ptr;
             }
         } else {  // delete if two child
-            Node<type>* successor = ptr;
-            Node<type>* parent_successor = ptr;
-            Node<type>* child_successor = ptr->right;
+            TreeNode<type>* successor = ptr;
+            TreeNode<type>* parent_successor = ptr;
+            TreeNode<type>* child_successor = ptr->right;
 
             while (child_successor != nullptr) {
                 parent_successor = successor;
@@ -267,7 +270,7 @@ void BinarySearchTree<type>::remove(const type& value) {
 }
 
 template<typename type>
-void BinarySearchTree<type>::print_NLR(Node<type> *node) const {
+void BinarySearchTree<type>::print_NLR(TreeNode<type> *node) const {
     if (node == nullptr) {
         return;
     }
@@ -277,7 +280,7 @@ void BinarySearchTree<type>::print_NLR(Node<type> *node) const {
 }
 
 template<typename type>
-void BinarySearchTree<type>::print_LNR(Node<type> *node) const {
+void BinarySearchTree<type>::print_LNR(TreeNode<type> *node) const {
     if (node == nullptr) {
         return;
     }
@@ -287,7 +290,7 @@ void BinarySearchTree<type>::print_LNR(Node<type> *node) const {
 }
 
 template<typename type>
-void BinarySearchTree<type>::print_RNL(Node<type> *node) const {
+void BinarySearchTree<type>::print_RNL(TreeNode<type> *node) const {
     if (node == nullptr) {
         return;
     }
@@ -327,7 +330,7 @@ void BinarySearchTree<type>::clear() {
 }
 
 template<typename type>
-void BinarySearchTree<type>::print_tree(const Node<type>* node,
+void BinarySearchTree<type>::print_tree(const TreeNode<type>* node,
                                         int tab, std::ostream& stream) const {
     if (node == nullptr) {
         return;
