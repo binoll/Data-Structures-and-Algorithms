@@ -182,22 +182,22 @@ void PriorityQueue<type>::siftDown() {
 template<typename type>
 void PriorityQueue<type>::push(const type& value, const int64_t& priority) {
     if (size == max_size) {
-        std::cout << "\nProblems with add element!\n";
+        std::cout << "\nProblems with push method!\n";
         return;
     }
     try {
-        QueueNode<type>* new_ptr = new QueueNode<type>[++size];
+        QueueNode<type>* new_arr = new QueueNode<type>[++size];
 
         for (int i = 0; i < (size - 1); ++i) {
-            new_ptr[i] = arr[i];
+            new_arr[i] = arr[i];
         }
-        new_ptr[size - 1] = QueueNode<type>(value, priority);
+        new_arr[size - 1] = QueueNode<type>(value, priority);
         delete[] arr;
-        arr = new_ptr;
+        arr = new_arr;
         siftUp();
         return;
     } catch (...) {
-        std::cout << "\nProblems with push method\n";
+        std::cout << "\nProblems with push method!\n";
         return;
     }
 }
