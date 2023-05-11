@@ -218,6 +218,7 @@ QueueNode<type> PriorityQueue<type>::popMax() {
         }
         delete[] arr;
         arr = new_ptr;
+        siftUp();
         siftDown();
         return node;
     } catch (...) {
@@ -298,6 +299,8 @@ QueueNode<type> PriorityQueue<type>::popMin() {
             }
             delete[] ptr_before;
             delete[] ptr_after;
+            siftUp();
+            siftDown();
         }
     } catch (...) {
         std::cout << "\nProblems with remove element\n";
